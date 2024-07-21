@@ -1,0 +1,24 @@
+server:
+  env: "${SERVER_ENV}"
+  http:
+    name: "${SERVICE_NAME}"
+    host: 0.0.0.0
+    port: 8000
+    timeout: 30000
+
+database:
+  driver: "${DB_DRIVER}"
+  host: "${DB_HOST}"
+  port: "${DB_PORT}"
+  username: "${DB_USERNAME}"
+  password: "${DB_PASSWORD}"
+  name: "${DB_NAME}"
+  schema-name: "${DB_SCHEMA_NAME}"
+  max-retry: 5
+  retry-delay: 2
+  multiplier: 2
+
+jwt:
+  hash-secret: ${JWT_HASH_SECRET}
+  access-token-lifespan: ${JWT_ACCESS_TOKEN_LIFESPAN}
+  refresh-token-lifespan: ${JWT_REFRESH_TOKEN_LIFESPAN}
