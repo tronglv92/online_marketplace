@@ -1,14 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+
+	"github.com/online_marketplace/helper/core/service"
+	"github.com/online_marketplace/helper/rest"
 
 	"github.com/online_marketplace/internal/config"
 	"github.com/online_marketplace/internal/handler"
@@ -16,41 +12,16 @@ import (
 )
 
 func main() {
-	config := config.Init()
-	appCtx := registry.NewServiceContext(*config)
-	fmt.Printf("Loaded Configuration: %+v\n", config)
-
-	
+	c := config.Init()
+	appCtx := registry.NewServiceContext(*c)
 	router := handler.NewRouter(appCtx)
 
-	// Server address
-	serverAddr := fmt.Sprintf("%s:%d", config.Server.Http.Host, config.Server.Http.Port)
+	svcGroup := service.NewServiceGroup()
+	srv := rest.MustNewServer(c.Server, router)
 
-	// HTTP server
-	srv := &http.Server{
-		Addr:    serverAddr,
-		Handler: router,
-	}
+	svcGroup.Add(srv)
+	defer svcGroup.Stop()
 
-	// Graceful shutdown
-	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
-	log.Printf("Server started on %s", serverAddr)
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutting down server...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
-	}
-
-	log.Println("Server exiting")
-
+	fmt.Printf("Starting server at %s:%d...\n", c.Server.Http.Host, c.Server.Http.Port)
+	svcGroup.Start()
 }
