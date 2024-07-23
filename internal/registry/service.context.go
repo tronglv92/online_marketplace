@@ -12,6 +12,7 @@ import (
 type ServiceContext struct {
 	Config      config.Config
 	UserRepo    repository.UserRepository
+	ProductRepo repository.ProductRepository
 	JwtProvider tokenprovider.Provider
 }
 
@@ -21,9 +22,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		database.WithGormMigrate(entity.RegisterMigrate()),
 	)
 	userRepo := repository.NewUserRepository(sqlConn)
+	productRepo := repository.NewProductRepository(sqlConn)
 	return &ServiceContext{
 		Config:      c,
 		UserRepo:    userRepo,
+		ProductRepo: productRepo,
 		JwtProvider: jwt.NewTokenJWTProvider(c.JWT),
 	}
 

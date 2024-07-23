@@ -13,6 +13,7 @@ import (
 )
 
 type (
+	// Strategy Pattern
 	// RunOption defines the method to customize a Server.
 	RunOption func(*Server)
 
@@ -25,7 +26,7 @@ type (
 		srv    *http.Server
 	}
 )
-
+// factory method pattern
 func MustNewServer(config config.ServerConfig, route *gin.Engine, opts ...RunOption) *Server {
 	server, err := NewServer(config, route, opts...)
 	if err != nil {
@@ -35,6 +36,7 @@ func MustNewServer(config config.ServerConfig, route *gin.Engine, opts ...RunOpt
 	return server
 }
 
+// factory method pattern
 func NewServer(config config.ServerConfig, route *gin.Engine, opts ...RunOption) (*Server, error) {
 
 	server := &Server{

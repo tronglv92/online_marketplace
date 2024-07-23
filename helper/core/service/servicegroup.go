@@ -36,6 +36,8 @@ type (
 // NewServiceGroup returns a ServiceGroup.
 func NewServiceGroup() *ServiceGroup {
 	sg := new(ServiceGroup)
+
+	// singleton pattern syncx.Once
 	sg.stopOnce = syncx.Once(sg.doStop)
 	return sg
 }
